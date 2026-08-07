@@ -7,5 +7,7 @@ spec:
   selector:
     matchLabels:
       app: label-service-b
+      # from here:
+      # Deployment.spec.template.metadata.labels.app --> "label-service-b"
   mtls:
     mode: STRICT #PERMISSIVE

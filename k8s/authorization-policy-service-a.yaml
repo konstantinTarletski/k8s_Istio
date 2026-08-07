@@ -6,7 +6,9 @@ metadata:
 spec:
   selector:
     matchLabels:
-      app: service-a # Defence target
+      app: label-service-a # Defence target
+      # from here:
+      # Deployment.spec.template.metadata.labels.app --> "label-service-a"
   action: DENY
   rules:
     - from:
