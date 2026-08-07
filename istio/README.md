@@ -107,8 +107,13 @@ Check sidecars: pods have 2 containers, one is Istio !!
 > Not a good solution because It affects all k8S services.
 
 Add to our ingress :  
-`metadata.annotations`:  
+`Ingress.metadata.annotations`:  
 `nginx.ingress.kubernetes.io/service-upstream: "true"`  
+Needed for VirtualService  
+`VirtualService` :  
+- Traffic split, for example, 80/20
+- Retries, for example, `attempts: 3`
+
 **!!! Modifying `ingress-nginx` namespace !!!**  
 `kubectl label namespace ingress-nginx istio-injection=enabled`
 
@@ -298,6 +303,21 @@ http://localhost/service-a/get-communication-hello
   }
 ]
 ```
+
+## External VM Integration (In Simple Terms)
+
+### 1. The Simple Way (Via NGINX Ingress)
+* **How it works:** The external VM connects to Kubernetes just like a regular internet user—via the public IP/DNS of the NGINX Ingress [🔗].
+* **Pros:** Very easy to configure; no extra software needed on the VM.
+* **Cons:** No end-to-end mTLS encryption to the Pods, and the VM cannot use internal Kubernetes DNS names (it cannot call `http://service-a-svc:8080`) [🔗].
+
+### 2. The Istio Way (Via WorkloadEntry)
+* **How it works:** You install an Envoy proxy directly inside the VM and give it a Kubernetes passport (`ServiceAccount`) [🔗].
+* **Pros:** The VM becomes a full member of the Service Mesh. It gets **STRICT mTLS** security, respects `AuthorizationPolicy`, and can natively call internal cluster DNS names [🔗].
+* **Cons:** Higher setup complexity; requires maintaining the Envoy proxy on the VM.
+
+
+
 
 -----------
 ### Garbage for the future use 
