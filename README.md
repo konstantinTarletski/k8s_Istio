@@ -1,16 +1,25 @@
-## If you use local docker env
+# Creating k8s
+
+If you use local docker env  
+Switch `kubectl` to local Docker env.
 ```
 kubectl config use-context docker-desktop
 ```
-Switches `kubectl` to local Docker env.
 
-## Build first:
+Adding Ingress controller:
 ```
 kubectl apply -f https://raw.githubusercontent.com/kubernetes/ingress-nginx/main/deploy/static/provider/cloud/deploy.yaml
-kubectl create namespace skais-2-test
-kubectl apply -f C:\CODE\k8s_istio\k8s\
+
 ```
-Where `C:\CODE\](C:\CODE\k8s_istio\k8s\` -- path to kubernetes yamls
+Create namespace:
+
+`kubectl create namespace skais-2-test`
+
+Apply all k8s YAML files:
+
+`kubectl apply -f C:\CODE\k8s_istio\k8s\`
+
+Where `C:\CODE\](C:\CODE\k8s_istio\k8s\` -- path to kubernetes YAMLs
 
 ## Restart kubernetes:
 ```
