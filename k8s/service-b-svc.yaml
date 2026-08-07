@@ -1,0 +1,12 @@
+apiVersion: v1
+kind: Service
+metadata:
+  name: service-b-svc
+  namespace: skais-2-test
+spec:
+  selector:
+    app: label-service-b
+  ports:
+    - protocol: TCP
+      port: 8080
+      targetPort: 8080

@@ -1,0 +1,238 @@
+## If you use local docker env
+```
+kubectl config use-context docker-desktop
+```
+Switches `kubectl` to local Docker env.
+
+## Build first:
+```
+kubectl apply -f https://raw.githubusercontent.com/kubernetes/ingress-nginx/main/deploy/static/provider/cloud/deploy.yaml
+kubectl create namespace skais-2-test
+kubectl apply -f C:\CODE\k8s_istio\k8s\
+```
+Where `C:\CODE\](C:\CODE\k8s_istio\k8s\` -- path to kubernetes yamls
+
+## Restart kubernetes:
+```
+kubectl delete -f C:\CODE\k8s_istio\k8s\
+kubectl apply -f C:\CODE\k8s_istio\k8s\
+```
+Where `C:\CODE\` -- path to kubernetes yamls
+
+## Access to services:
+
+### Port forward:
+```
+kubectl port-forward svc/service-a-svc 8080:8080
+```
+Or `service-b` ... c
+
+`http://localhost:8080/get-communication-hello`
+```
+[
+  {
+    "role": "A1",
+    "timestamp": "2026-08-06T08:37:41.372949513"
+  },
+  {
+    "response-get-hello": {
+      "timestamp": "2026-08-06T08:37:41.494113557",
+      "role": "B1"
+    },
+    "host": "http://service-b-svc:8080"
+  },
+  {
+    "response-get-hello": {
+      "timestamp": "2026-08-06T08:37:41.584582119",
+      "role": "B1"
+    },
+    "host": "http://service-b-svc:8080"
+  }
+]
+```
+
+`http://localhost:8080/get-hello`
+
+```
+{
+  "timestamp": "2026-08-06T09:02:50.657740098",
+  "role": "B1"
+}
+```
+
+### Thru ingress:
+```
+http://localhost/service-b/get-communication-hello
+```
+```
+[
+  {
+    "timestamp": "2026-08-06T08:39:51.311318042",
+    "role": "B1"
+  },
+  {
+    "host": "http://service-a-svc:8080",
+    "response-get-hello": {
+      "role": "A1",
+      "timestamp": "2026-08-06T08:39:51.374568157"
+    }
+  }
+]
+```
+
+`http://localhost/service-b/get-hello`
+
+```
+{
+  "timestamp": "2026-08-06T09:02:50.657740098",
+  "role": "B1"
+}
+```
+
+## Thru Istio (istio-gateway.yaml)
+
+`http://localhost:8081/service-istio-a/get-hello`
+`http://localhost:8081/service-istio-b/get-hello`
+
+Responses the same
+
+## Logs:
+```
+kubectl get pods
+deployment-service-a-784ddbc66-zsz7f    0/1     Error    3 (57s ago)   78s
+deployment-service-b-5775c6f556-dsm7n   0/1     Error    3 (57s ago)   78s
+
+kubectl logs deployment-service-a-784ddbc66-zsz7f
+```
+
+## Rebuild Docker:
+### Rebuild java !!
+
+``
+mvn clean package
+docker rmi -f skais-microservice-example:latest
+cd C:\CODE\k8s_istio\microservice\
+docker build -t skais-microservice-example .
+``
+
+### Clean image from k8s registry
+```
+docker exec -it desktop-control-plane crictl rmi docker.io/library/skais-microservice-example:latest
+docker exec -it desktop-control-plane crictl images | findstr skais
+-- should be 0 !!
+```
+After that k8s pull it automatically
+
+## Other commands:
+```
+kubectl rollout restart deployment
+kubectl scale deployment --all --replicas=0
+```
+```
+C:\Users\dev>winget install openlens
+```
+
+# ISTIO
+
+## Istio CLI install Windows PS
+```
+winget install -e --id Istio.Istio
+```
+
+Check if Istio can be installed to cluster
+```
+istioctl x precheck
+
+```
+
+### Install Istio
+
+```
+istioctl install --set profile=demo -y
+kubectl get pods -n istio-system
+Output:
+NAME                                   READY   STATUS    RESTARTS   AGE
+istio-egressgateway-6f4fc6cdb9-xtl78   1/1     Running   0          52s
+istio-ingressgateway-75858699f-zmq7d   1/1     Running   0          52s
+istiod-67c645856-lfqmr                 1/1     Running   0          62s
+```
+
+`profile=demo` -- Aggressive logging, not for PROD
+
+## Adding sidecars
+
+>[!NOTE]
+> * Adding just label, nothing more, but it ENABLES Istio
+> * Everything should work, because no rules.
+
+### All cluster
+```
+kubectl label namespace skais-2-test istio-injection=enabled
+```
+Delete label:
+```
+kubectl label namespace skais-2-test istio-injection-
+
+```
+`-` --- deletes label
+
+### Adding sidecars to specific service
+```
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: service-b-deployment
+  namespace: skais-2-test
+spec:
+  replicas: 2
+  selector:
+    matchLabels:
+      app: service-b
+  template:
+    metadata:
+      # HERE !!!!!!!!
+      annotations:
+        sidecar.istio.io/inject: "true" 
+```
+
+#### Rollout
+All
+```
+kubectl rollout restart deployment -n skais-2-test
+```
+Specific
+```
+kubectl rollout restart deployment/deployment-service-a -n skais-2-test
+```
+Check sidecars: pods have 2 containers, one is Istio !!
+
+## Ingress
+>[!NOTE]
+> **There are 3 ways**
+> - Modify existing Ingress GLOBAL service
+> - Using Istio own `Gateway`
+> - Hybrid mode (Istio Gateway + Original Ingress)
+
+
+### Switch System (!!! ALL k8S !!!) Ingress to Istio (not good from my side)
+Add to our ingress :  
+`metadata.annotations`:  
+`nginx.ingress.kubernetes.io/service-upstream: "true"`  
+**!!! Modifying `ingress-nginx` namespace !!!**  
+`kubectl label namespace ingress-nginx istio-injection=enabled`
+
+Restart Ingress (!!!!! DOWNTIME !!!!!!)
+`kubectl rollout restart deployment/ingress-nginx-controller -n ingress-nginx`  
+because of 1 replica
+in prod should be OK
+
+C:\Users\dev>kubectl get pods -n skais-2-test
+NAME                                    READY   STATUS    RESTARTS   AGE
+deployment-service-a-69fb8dc6cb-wbrmf   2/2     Running   0          143m
+deployment-service-b-686bfb6cf7-bk2xv   2/2     Running   0          143m
+
+C:\Users\dev>istioctl proxy-config cluster deployment-service-a-69fb8dc6cb-wbrmf -n skais-2-test --fqdn service-b-svc.skais-2-test.svc.cluster.local
+SERVICE FQDN                                     PORT     SUBSET     DIRECTION     TYPE     DESTINATION RULE
+service-b-svc.skais-2-test.svc.cluster.local     8080     -          outbound      EDS
+
+EDS (Endpoint Discovery Service).

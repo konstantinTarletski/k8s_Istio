@@ -1,0 +1,30 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: deployment-service-a
+  namespace: skais-2-test
+spec:
+
+  replicas: 1
+  selector:
+    matchLabels:
+      app: label-service-a
+  template:
+    metadata:
+      labels:
+        app: label-service-a # PeerAuthentication.matchLabels !!!
+    spec:
+      serviceAccountName: service-a-sa
+      containers:
+        - name: java-app
+          image: skais-microservice-example:latest
+          imagePullPolicy: IfNotPresent
+          ports:
+            - containerPort: 8080
+          env:
+            - name: SPRING_APPLICATION_NAME
+              value: "A1"
+            - name: APP_DEPENDED_COMMUNICATION_HOSTS_0
+              value: "http://service-b-svc:8080"
+            - name: APP_DEPENDED_COMMUNICATION_HOSTS_1
+              value: "http://service-b-svc:8080"

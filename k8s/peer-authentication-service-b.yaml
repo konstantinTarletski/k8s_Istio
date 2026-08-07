@@ -1,0 +1,11 @@
+apiVersion: security.istio.io/v1beta1
+kind: PeerAuthentication
+metadata:
+  name: strict-mtls-service-b
+  namespace: skais-2-test
+spec:
+  selector:
+    matchLabels:
+      app: label-service-b
+  mtls:
+    mode: STRICT #PERMISSIVE

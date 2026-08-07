@@ -1,0 +1,35 @@
+apiVersion: networking.istio.io/v1alpha3
+kind: VirtualService
+metadata:
+  name: skais-microservices-router
+  namespace: skais-2-test
+spec:
+  hosts:
+    - "*"
+  gateways:
+    - skais-gateway # from istio-gateway.yaml
+  http:
+    - match:
+        - uri:
+            regex: ^/service-istio-a(/|$)(.*)
+      rewrite:
+        uriRegexRewrite:
+          match: ^/service-istio-a(/|$)(.*)
+          rewrite: /\2 # Set second group
+      route:
+        - destination:
+            host: service-a-svc.skais-2-test.svc.cluster.local
+            port:
+              number: 8080
+    - match:
+        - uri:
+            regex: ^/service-istio-b(/|$)(.*)
+      rewrite:
+        uriRegexRewrite:
+          match: ^/service-istio-b(/|$)(.*)
+          rewrite: /\2 # Set second group
+      route:
+        - destination:
+            host: service-b-svc.skais-2-test.svc.cluster.local
+            port:
+              number: 8080

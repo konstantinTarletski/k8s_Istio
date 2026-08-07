@@ -1,0 +1,30 @@
+apiVersion: networking.k8s.io/v1
+kind: Ingress
+metadata:
+  name: microservice-ingress
+  namespace: skais-2-test
+  annotations:
+    nginx.ingress.kubernetes.io/rewrite-target: /$2
+    # Switch traffic from ingress to Istio
+    # Will be mTLS !!!
+    nginx.ingress.kubernetes.io/service-upstream: "true"
+spec:
+  ingressClassName: nginx
+  rules:
+    - http:
+        paths:
+          - path: /service-a(/|$)(.*)
+            pathType: ImplementationSpecific
+            backend:
+              service:
+                name: service-a-svc
+                port:
+                  number: 8080
+
+          - path: /service-b(/|$)(.*)
+            pathType: ImplementationSpecific
+            backend:
+              service:
+                name: service-b-svc
+                port:
+                  number: 8080
