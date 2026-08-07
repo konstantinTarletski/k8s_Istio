@@ -215,9 +215,10 @@ Add to our ingress :
 **!!! Modifying `ingress-nginx` namespace !!!**  
 `kubectl label namespace ingress-nginx istio-injection=enabled`
 
-Restart Ingress (!!!!! DOWNTIME !!!!!!)
+Restart Ingress  
 `kubectl rollout restart deployment/ingress-nginx-controller -n ingress-nginx`  
-because of 1 replica
+(!!!!! DOWNTIME !!!!!!)  
+because of 1 replica  
 in prod should be OK
 
 
@@ -230,7 +231,7 @@ in prod should be OK
 > See:  
 > [istio-gateway.yaml.bak](k8s/istio-gateway.yaml.bak)  
 > [istio-virtualservice.yaml.bak](k8s/istio-virtualservice.yaml.bak)  
-> **And after enabling mTLS "OLD" Ingress will not work anymore because it can nto ebcrypt trafic**
+> **And after enabling mTLS "OLD" Ingress will not work anymore because it cannot encrypt traffic**
 
 It means that links:  
 http://localhost/service-a/get-hello  
