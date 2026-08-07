@@ -168,10 +168,56 @@ spec:
   mtls:
     mode: STRICT
 ```
+### How to check
+Get pod names:
+```
+C:\CODE\k8s_istio\k8s>kubectl get pods -n skais-2-test
+NAME                                    READY   STATUS    RESTARTS        AGE
+deployment-service-a-b49448f6c-5smr9    2/2     Running   2 (3h52m ago)   22h
+deployment-service-b-6f6fb5b4b6-9xhqh   2/2     Running   2 (3h52m ago)   22h
+```
+Try to access from `istio-proxy` (sidecar) (it will not encrypt traffic) to pod 
+```
+C:\CODE\k8s_istio\k8s>kubectl exec -it deployment-service-b-6f6fb5b4b6-9xhqh -n skais-2-test -c istio-proxy -- curl -i http://service-a-svc:8080/get-hello
+curl: (56) Recv failure: Connection reset by peer
+command terminated with exit code 56
+```
+**Get error: `Connection reset by peer`, this means that mTLS is enabled.**
+
+Now delete `PeerAuthentication` rules:
+```
+kubectl delete peerauthentication strict-mtls-service-a -n skais-2-test
+kubectl delete peerauthentication strict-mtls-service-b -n skais-2-test
+```
+Trying to access from `istio-proxy` (sidecar) to pod:
+```
+C:\CODE\k8s_istio\k8s>kubectl exec -it deployment-service-b-6f6fb5b4b6-9xhqh -n skais-2-test -c istio-proxy -- curl -i http://service-a-svc:8080/get-hello
+HTTP/1.1 200 OK
+content-type: application/json
+content-length: 57
+date: Fri, 07 Aug 2026 12:51:16 GMT
+x-envoy-upstream-service-time: 4
+server: istio-envoy
+x-envoy-decorator-operation: service-a-svc.skais-2-test.svc.cluster.local:8080/*
+
+{"role":"A1","timestamp":"2026-08-07T12:51:16.158092354"}
+```
+**Get response :`{"role":"A1","timestamp":"2026-08-07T12:51:16.158092354"}`, this means that mTLS is disabled.**
+
+Trying to access from `port-forward`
+`kubectl port-forward pod/deployment-service-b-6f6fb5b4b6-9xhqh -n skais-2-test 8082:8080`
+
+http://localhost:8082/get-hello  
+**OK** because `port-forward` is go directly to the JAVA application.
+```
+{
+  "timestamp": "2026-08-07T12:59:12.787270192",
+  "role": "B1"
+}
+```
 
 ## Access rules (AuthorizationPolicy)
-This will work only after mTLS is enabled.  
-**If mTLS is of -- this rule will be ignored.**  
+
 ```
 apiVersion: security.istio.io/v1beta1
 kind: AuthorizationPolicy
@@ -182,7 +228,7 @@ spec:
   selector:
     matchLabels:
       app: label-service-a 
-      # Target of protection. Must exactly match the pod label:
+      # Target of protection. Must !!!exactly!!! match the pod label:
       # Deployment.spec.template.metadata.labels.app --> "label-service-a"
   action: DENY
   rules:
@@ -192,8 +238,7 @@ spec:
 ```
 `cluster.local` -- cluster name
 `ns/skais-2-test` -- namespace
-`sa/service-b-sa` -- service account name (`Deployment.spec.template.spec.serviceAccountName --> "service-b-sa"`)  
-
+`sa/service-b-sa` -- service account name (`Deployment.spec.template.spec.serviceAccountName --> "service-b-sa"`)
 
 This means:
 
@@ -209,6 +254,47 @@ kind: ServiceAccount
 metadata:
   name: service-b-sa
   namespace: skais-2-test
+```
+### How to check
+Restricted access `DENY`:
+http://localhost/service-b/get-communication-hello
+```
+[
+  {
+    "timestamp": "2026-08-07T10:16:02.775001086",
+    "role": "B1"
+  },
+  {
+    "response-get-hello": {
+      "error": "Failed to reach host: 403 Forbidden: \"RBAC: access denied\""
+    },
+    "host": "http://service-a-svc:8080"
+  }
+]
+```
+Allowed access (no any `AuthorizationPolicy`):
+http://localhost/service-a/get-communication-hello
+```
+[
+  {
+    "role": "A1",
+    "timestamp": "2026-08-07T10:16:15.697369048"
+  },
+  {
+    "host": "http://service-b-svc:8080",
+    "response-get-hello": {
+      "timestamp": "2026-08-07T10:16:15.780893831",
+      "role": "B1"
+    }
+  },
+  {
+    "host": "http://service-b-svc:8080",
+    "response-get-hello": {
+      "timestamp": "2026-08-07T10:16:15.897189938",
+      "role": "B1"
+    }
+  }
+]
 ```
 
 -----------

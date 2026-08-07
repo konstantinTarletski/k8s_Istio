@@ -6,7 +6,7 @@ metadata:
   annotations:
     nginx.ingress.kubernetes.io/rewrite-target: /$2
     # Switch traffic from ingress to Istio
-    # Will be mTLS !!!
+    #  Forces NGINX to route traffic through the ClusterIP Service instead of direct Pod IPs
     nginx.ingress.kubernetes.io/service-upstream: "true"
 spec:
   ingressClassName: nginx

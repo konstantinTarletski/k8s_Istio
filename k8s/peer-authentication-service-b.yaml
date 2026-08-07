@@ -7,7 +7,7 @@ spec:
   selector:
     matchLabels:
       app: label-service-b
-      # from here:
+      # Target for mTLS enforcement. Must exactly match the pod label:
       # Deployment.spec.template.metadata.labels.app --> "label-service-b"
   mtls:
-    mode: STRICT #PERMISSIVE
+    mode: STRICT
