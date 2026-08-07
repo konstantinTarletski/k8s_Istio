@@ -272,6 +272,8 @@ http://localhost/service-b/get-communication-hello
   }
 ]
 ```
+See **Failed to reach host: 403 Forbidden: \"RBAC: access denied\"**  
+
 Allowed access (no any `AuthorizationPolicy`):
 http://localhost/service-a/get-communication-hello
 ```
