@@ -55,37 +55,7 @@ Don’t work on Windows, need hack
 
 ## Responses:
 
-`http://XXX/get-communication-hello`  
-```
-[
-  {
-    "role": "A1",
-    "timestamp": "2026-08-06T08:37:41.372949513"
-  },
-  {
-    "response-get-hello": {
-      "timestamp": "2026-08-06T08:37:41.494113557",
-      "role": "B1"
-    },
-    "host": "http://service-b-svc:8080"
-  },
-  {
-    "response-get-hello": {
-      "timestamp": "2026-08-06T08:37:41.584582119",
-      "role": "B1"
-    },
-    "host": "http://service-b-svc:8080"
-  }
-]
-```
-
-`http://XXX/get-hello`
-```
-{
-  "timestamp": "2026-08-06T09:02:50.657740098",
-  "role": "B1"
-}
-```
+See: [README.md](../microservice/README.md)
 
 ## Logs:
 ```
@@ -116,7 +86,7 @@ docker exec -it desktop-control-plane crictl images | findstr skais
 ```
 After that k8s pull it automatically
 
-Restart kubernetes:
+Restart kubernetes and istio:
 ```
 kubectl delete -f C:\CODE\k8s_istio\istio\
 kubectl delete -f C:\CODE\k8s_istio\k8s\

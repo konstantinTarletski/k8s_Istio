@@ -1,9 +1,9 @@
 
 Apply all k8s YAML files:
 
-`kubectl apply -f C:\CODE\k8s_istio\k8s\`
+`kubectl apply -f C:\CODE\k8s_istio\istio\`
 
-Where `C:\CODE\](C:\CODE\k8s_istio\k8s\` -- path to kubernetes YAMLs
+Where `(C:\CODE\k8s_istio\istio\` -- path to YAMLs
 
 ## Access to services:
 
@@ -19,7 +19,7 @@ Don’t work on Windows, need hack
 
 ## Responses:
 
-See: [README.md](../k8s/README.md)  
+See: [README.md](../microservice/README.md)
 
 # ISTIO
 
