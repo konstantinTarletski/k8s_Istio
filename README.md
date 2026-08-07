@@ -6,6 +6,12 @@ Switch `kubectl` to local Docker env.
 kubectl config use-context docker-desktop
 ```
 
+Install OpenLens (if needed)  
+UI Tool for kubernetes management 
+```
+C:\Users\dev>winget install openlens
+```
+
 Adding Ingress controller:
 ```
 kubectl apply -f https://raw.githubusercontent.com/kubernetes/ingress-nginx/main/deploy/static/provider/cloud/deploy.yaml
@@ -21,22 +27,35 @@ Apply all k8s YAML files:
 
 Where `C:\CODE\](C:\CODE\k8s_istio\k8s\` -- path to kubernetes YAMLs
 
-## Restart kubernetes:
-```
-kubectl delete -f C:\CODE\k8s_istio\k8s\
-kubectl apply -f C:\CODE\k8s_istio\k8s\
-```
-Where `C:\CODE\` -- path to kubernetes yamls
-
 ## Access to services:
 
 ### Port forward:
 ```
 kubectl port-forward svc/service-a-svc 8080:8080
 ```
-Or `service-b` ... c
+http://localhost:8080/get-communication-hello  
+http://localhost:8080/get-hello  
 
-`http://localhost:8080/get-communication-hello`
+Or `service-b` ... c ...
+
+### Through ingress:
+
+http://localhost/service-a/get-communication-hello  
+http://localhost/service-b/get-hello  
+
+## Through Istio (istio-gateway.yaml)
+Don’t work on Windows, need hack  
+`kubectl port-forward svc/istio-ingressgateway -n istio-system 8081:80`
+
+[istio-gateway.yaml.bak](k8s/istio-gateway.yaml.bak)  
+[istio-virtualservice.yaml.bak](k8s/istio-virtualservice.yaml.bak)
+
+`http://localhost:8081/service-istio-a/get-hello`  
+`http://localhost:8081/service-istio-b/get-hello`  
+
+## Responses:
+
+`http://XXX/get-communication-hello`  
 ```
 [
   {
@@ -60,8 +79,7 @@ Or `service-b` ... c
 ]
 ```
 
-`http://localhost:8080/get-hello`
-
+`http://XXX/get-hello`
 ```
 {
   "timestamp": "2026-08-06T09:02:50.657740098",
@@ -69,41 +87,6 @@ Or `service-b` ... c
 }
 ```
 
-### Thru ingress:
-```
-http://localhost/service-b/get-communication-hello
-```
-```
-[
-  {
-    "timestamp": "2026-08-06T08:39:51.311318042",
-    "role": "B1"
-  },
-  {
-    "host": "http://service-a-svc:8080",
-    "response-get-hello": {
-      "role": "A1",
-      "timestamp": "2026-08-06T08:39:51.374568157"
-    }
-  }
-]
-```
-
-`http://localhost/service-b/get-hello`
-
-```
-{
-  "timestamp": "2026-08-06T09:02:50.657740098",
-  "role": "B1"
-}
-```
-
-## Thru Istio (istio-gateway.yaml)
-
-`http://localhost:8081/service-istio-a/get-hello`
-`http://localhost:8081/service-istio-b/get-hello`
-
-Responses the same
 
 ## Logs:
 ```
@@ -115,16 +98,18 @@ kubectl logs deployment-service-a-784ddbc66-zsz7f
 ```
 
 ## Rebuild Docker:
-### Rebuild java !!
 
+Rebuild java  
+`mvn clean package`
+
+Delete Docker image:
 ``
-mvn clean package
 docker rmi -f skais-microservice-example:latest
 cd C:\CODE\k8s_istio\microservice\
 docker build -t skais-microservice-example .
 ``
 
-### Clean image from k8s registry
+Clean image from k8s registry  
 ```
 docker exec -it desktop-control-plane crictl rmi docker.io/library/skais-microservice-example:latest
 docker exec -it desktop-control-plane crictl images | findstr skais
@@ -132,14 +117,12 @@ docker exec -it desktop-control-plane crictl images | findstr skais
 ```
 After that k8s pull it automatically
 
-## Other commands:
+Restart kubernetes:
 ```
-kubectl rollout restart deployment
-kubectl scale deployment --all --replicas=0
+kubectl delete -f C:\CODE\k8s_istio\k8s\
+kubectl apply -f C:\CODE\k8s_istio\k8s\
 ```
-```
-C:\Users\dev>winget install openlens
-```
+Where `C:\CODE\` -- path to kubernetes yamls
 
 # ISTIO
 
@@ -148,11 +131,8 @@ C:\Users\dev>winget install openlens
 winget install -e --id Istio.Istio
 ```
 
-Check if Istio can be installed to cluster
-```
-istioctl x precheck
-
-```
+Check if Istio can be installed to a cluster  
+`istioctl x precheck`
 
 ### Install Istio
 
@@ -174,7 +154,7 @@ istiod-67c645856-lfqmr                 1/1     Running   0          62s
 > * Adding just label, nothing more, but it ENABLES Istio
 > * Everything should work, because no rules.
 
-### All cluster
+### All namespace
 ```
 kubectl label namespace skais-2-test istio-injection=enabled
 ```
@@ -185,7 +165,7 @@ kubectl label namespace skais-2-test istio-injection-
 ```
 `-` --- deletes label
 
-### Adding sidecars to specific service
+### Adding sidecars to a specific service
 ```
 apiVersion: apps/v1
 kind: Deployment
@@ -218,12 +198,16 @@ Check sidecars: pods have 2 containers, one is Istio !!
 ## Ingress
 >[!NOTE]
 > **There are 3 ways**
-> - Modify existing Ingress GLOBAL service
+> - Modify the existing Ingress GLOBAL service
 > - Using Istio own `Gateway`
 > - Hybrid mode (Istio Gateway + Original Ingress)
 
+### 1. Modify the existing Ingress GLOBAL service
+**Switch System (!!! ALL k8S !!!) Ingress to Istio (not good from my side)**  
 
-### Switch System (!!! ALL k8S !!!) Ingress to Istio (not good from my side)
+>[!WARNING]
+> Not a good solution because It affects all k8S services.
+
 Add to our ingress :  
 `metadata.annotations`:  
 `nginx.ingress.kubernetes.io/service-upstream: "true"`  
@@ -234,6 +218,34 @@ Restart Ingress (!!!!! DOWNTIME !!!!!!)
 `kubectl rollout restart deployment/ingress-nginx-controller -n ingress-nginx`  
 because of 1 replica
 in prod should be OK
+
+
+### 2. Using Istio own `Gateway`
+
+>[!WARNING]
+> Better.
+> You can use "OLD" existing Ingress and in parallel add new Istio Gateway.  
+> But you need to create all Ingress rules manually again. !!!  
+> See:  
+> [istio-gateway.yaml.bak](k8s/istio-gateway.yaml.bak)  
+> [istio-virtualservice.yaml.bak](k8s/istio-virtualservice.yaml.bak)  
+> **And after enabling mTLS "OLD" Ingress will not work anymore because it can nto ebcrypt trafic** 
+
+### 3. Hybrid mode (Istio Gateway + Original Ingress)
+
+> [!TIP]
+> **Recommended.**  
+> We will not switch Ingress (`namespace ingress-nginx`) to Istio.  
+> But redirect Ingress traffic to Istio Gateway.  
+> And Istio Gateway will do the encryption and all other "Istio things"
+
+### TODO Describe how to start it
+
+-----------
+### Garbage for the future use 
+Just for my own use  
+**Not part of the README**  
+
 
 C:\Users\dev>kubectl get pods -n skais-2-test
 NAME                                    READY   STATUS    RESTARTS   AGE
