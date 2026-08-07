@@ -206,6 +206,7 @@ Check sidecars: pods have 2 containers, one is Istio !!
 **Switch System (!!! ALL k8S !!!) Ingress to Istio (not good from my side)**  
 
 >[!WARNING]
+> **Bad solution**  
 > Not a good solution because It affects all k8S services.
 
 Add to our ingress :  
@@ -223,13 +224,22 @@ in prod should be OK
 ### 2. Using Istio own `Gateway`
 
 >[!WARNING]
-> Better.
+> **Better solution**  
 > You can use "OLD" existing Ingress and in parallel add new Istio Gateway.  
 > But you need to create all Ingress rules manually again. !!!  
 > See:  
 > [istio-gateway.yaml.bak](k8s/istio-gateway.yaml.bak)  
 > [istio-virtualservice.yaml.bak](k8s/istio-virtualservice.yaml.bak)  
-> **And after enabling mTLS "OLD" Ingress will not work anymore because it can nto ebcrypt trafic** 
+> **And after enabling mTLS "OLD" Ingress will not work anymore because it can nto ebcrypt trafic**
+
+It means that links:  
+http://localhost/service-a/get-hello  
+http://localhost:8081/service-istio-a/get-hello
+Will work together, at the same time.  
+**But only before mTLS will be enabled.**  
+
+After enabling mTLS, oly this will work:  
+http://localhost/service-a/get-hello
 
 ### 3. Hybrid mode (Istio Gateway + Original Ingress)
 
