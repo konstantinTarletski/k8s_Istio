@@ -1,4 +1,4 @@
-# microservice
+# Java microservice
 See microservice: [README.md](microservice/README.md)
 
 # k8s
