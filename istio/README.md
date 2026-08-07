@@ -11,15 +11,15 @@ Where `C:\CODE\](C:\CODE\k8s_istio\k8s\` -- path to kubernetes YAMLs
 Don’t work on Windows, need hack  
 `kubectl port-forward svc/istio-ingressgateway -n istio-system 8081:80`
 
-[istio-gateway.yaml.bak](k8s/istio-gateway.yaml.bak)  
-[istio-virtualservice.yaml.bak](k8s/istio-virtualservice.yaml.bak)
+[istio-gateway.yaml.bak](istio-gateway.yaml.bak)  
+[istio-virtualservice.yaml.bak](istio-virtualservice.yaml.bak)
 
 `http://localhost:8081/service-istio-a/get-hello`  
 `http://localhost:8081/service-istio-b/get-hello`  
 
 ## Responses:
 
-See: [README.md](README.md)  
+See: [README.md](../k8s/README.md)  
 
 # ISTIO
 
@@ -126,8 +126,8 @@ in prod should be OK
 > You can use "OLD" existing Ingress and in parallel add new Istio Gateway.  
 > But you need to create all Ingress rules manually again. !!!  
 > See:  
-> [istio-gateway.yaml.bak](k8s/istio-gateway.yaml.bak)  
-> [istio-virtualservice.yaml.bak](k8s/istio-virtualservice.yaml.bak)  
+> [istio-gateway.yaml.bak](istio-gateway.yaml.bak)  
+> [istio-virtualservice.yaml.bak](istio-virtualservice.yaml.bak)  
 > **And after enabling mTLS "OLD" Ingress will not work anymore because it cannot encrypt traffic**
 
 It means that links:  
