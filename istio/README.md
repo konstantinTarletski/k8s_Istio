@@ -317,8 +317,6 @@ http://localhost/service-a/get-communication-hello
 * **Cons:** Higher setup complexity; requires maintaining the Envoy proxy on the VM.
 
 
-
-
 -----------
 ### Garbage for the future use 
 Just for my own use  
