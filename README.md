@@ -1,4 +1,7 @@
 # Microservice
+> [!TIP]
+> See microservice: [README.md](microservice/README.md)
+
 - Java 25 microservice.
 - Spring-boot 4.0.7
 - Lombok
@@ -7,10 +10,9 @@ Endpoints:
 - `/get-hello` -- Responses name and time 
 - `/get-communication-hello` -- Responses name, time and "depended" microservices.
 
-See microservice: [README.md](microservice/README.md)
-
 # K8S
-See k8s Readme: [README.md](k8s/README.md)
+> [!TIP]
+> See k8s Readme: [README.md](k8s/README.md)
 
 [deployment-service-a.yaml](k8s/deployment-service-a.yaml)  
 [deployment-service-b.yaml](k8s/deployment-service-b.yaml)  
@@ -19,7 +21,8 @@ See k8s Readme: [README.md](k8s/README.md)
 [service-account-service-b.yaml](k8s/service-account-service-b.yaml)  
 
 # ISTIO
-See Istio Readme: [README.md](../istio/README.md)
+> [!TIP]
+> See Istio Readme: [README.md](../istio/README.md)
 
 Communication rules `AuthorizationPolicy`:  
 [authorization-policy-service-a.yaml](istio/authorization-policy-service-a.yaml)  
