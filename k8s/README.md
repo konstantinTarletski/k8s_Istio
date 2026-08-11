@@ -12,26 +12,6 @@ UI Tool for kubernetes management
 C:\Users\dev>winget install openlens
 ```
 
-Create namespace:
-
-`kubectl create namespace skais-2-test`
-
-Apply all k8s YAML files:
-
-`kubectl apply -f C:\CODE\k8s_istio\k8s\`
-
-Where `C:\CODE\](C:\CODE\k8s_istio\k8s\` -- path to kubernetes YAMLs
-
-
-## Logs:
-```
-kubectl get pods -n skais-2-test
-deployment-service-a-784ddbc66-zsz7f    0/1     Error    3 (57s ago)   78s
-deployment-service-b-5775c6f556-dsm7n   0/1     Error    3 (57s ago)   78s
-
-kubectl logs deployment-service-a-784ddbc66-zsz7f
-```
-
 ## Rebuild Docker:
 
 Rebuild java  
@@ -56,9 +36,21 @@ docker exec -it desktop-control-plane crictl images | findstr skais
 docker save skais-microservice-example:latest | docker exec -i desktop-control-plane ctr -n k8s.io images import -
 ```
 
-Apply all k8s YAML files:
+## Create namespace:  
+`kubectl create namespace skais-2-test`
+
+## Apply all k8s YAML files:
 ```
 kubectl apply -f C:\CODE\k8s_istio\k8s\
+```
+
+## Logs:
+```
+kubectl get pods -n skais-2-test
+deployment-service-a-784ddbc66-zsz7f    0/1     Error    3 (57s ago)   78s
+deployment-service-b-5775c6f556-dsm7n   0/1     Error    3 (57s ago)   78s
+
+kubectl logs deployment-service-a-784ddbc66-zsz7f
 ```
 
 ## Check that services are up and running:
