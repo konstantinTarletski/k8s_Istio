@@ -1,4 +1,11 @@
 # All main commands together
+
+## create namespace and enable istio
+```cmd
+kubectl create namespace skais-2-test
+kubectl label namespace skais-2-test istio-injection=enabled
+```
+
 ## nginx gateway
 ```cmd
 kubectl patch svc ingress-nginx-controller -n ingress-nginx -p "{\"spec\": {\"type\": \"ClusterIP\"}}"
