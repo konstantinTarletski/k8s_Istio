@@ -5,9 +5,17 @@ metadata:
   namespace: skais-2-test
   annotations:
     nginx.ingress.kubernetes.io/rewrite-target: /$2
-    # Switch traffic from ingress to Istio
-    # Forces NGINX to route traffic through the ClusterIP Service instead of direct Pod IPs
-    # Needed for VirtualService
+    # Pure Kubernetes Load Balancing Comparison (No Istio):
+
+    # WITHOUT ANNOTATION (Default):
+    # NGINX is the Load Balancer. Uses advanced algorithms (least_conn, ip_hash),
+    # re-uses TCP connections (keep-alive), and talks directly to Pod IPs.
+
+    # WITH service-upstream: "true":
+    # kube-proxy (iptables) is the Load Balancer. Dumb random routing at Linux kernel level.
+    # NGINX acts only as a proxy to the Service ClusterIP. No keep-alive to Pods.
+
+    # FOR ISTIO better to put TRUE
     nginx.ingress.kubernetes.io/service-upstream: "true"
 spec:
   ingressClassName: nginx

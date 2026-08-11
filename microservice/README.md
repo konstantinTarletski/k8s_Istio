@@ -1,6 +1,6 @@
 ## API:
-
-`http://XXX/get-communication-hello`
+ 
+http://XXX/get-communication-hello -- Responses name, time and "depended" microservices.
 ```
 [
   {
@@ -24,7 +24,7 @@
 ]
 ```
 
-`http://XXX/get-hello`
+http://XXX/get-hello -- Responses name and time
 ```
 {
   "timestamp": "2026-08-06T09:02:50.657740098",

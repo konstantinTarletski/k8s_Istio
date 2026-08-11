@@ -1,26 +1,3 @@
-
-Apply all k8s YAML files:
-
-`kubectl apply -f C:\CODE\k8s_istio\istio\`
-
-Where `(C:\CODE\k8s_istio\istio\` -- path to YAMLs
-
-## Access to services:
-
-## Through Istio (istio-gateway.yaml)
-Don’t work on Windows, need hack  
-`kubectl port-forward svc/istio-ingressgateway -n istio-system 8081:80`
-
-[istio-gateway.yaml.bak](istio-gateway.yaml.bak)  
-[istio-virtualservice.yaml.bak](istio-virtualservice.yaml.bak)
-
-`http://localhost:8081/service-istio-a/get-hello`  
-`http://localhost:8081/service-istio-b/get-hello`  
-
-## Responses:
-
-See: [README.md](../microservice/README.md)
-
 # ISTIO
 
 ## Istio CLI install Windows PS
@@ -92,7 +69,11 @@ kubectl rollout restart deployment/deployment-service-a -n skais-2-test
 ```
 Check sidecars: pods have 2 containers, one is Istio !!
 
-## Ingress
+Apply all k8s YAML files:
+
+`kubectl apply -f C:\CODE\k8s_istio\istio\`
+
+## GATEWAY
 >[!NOTE]
 > **There are 3 ways**
 > - Modify the existing Ingress GLOBAL service
@@ -105,24 +86,7 @@ Check sidecars: pods have 2 containers, one is Istio !!
 >[!WARNING]
 > **Bad solution**  
 > Not a good solution because It affects all k8S services.
-
-Add to our ingress :  
-`Ingress.metadata.annotations`:  
-`nginx.ingress.kubernetes.io/service-upstream: "true"`  
-Needed for VirtualService  
-`VirtualService` :  
-- Traffic split, for example, 80/20
-- Retries, for example, `attempts: 3`
-
-**!!! Modifying `ingress-nginx` namespace !!!**  
-`kubectl label namespace ingress-nginx istio-injection=enabled`
-
-Restart Ingress  
-`kubectl rollout restart deployment/ingress-nginx-controller -n ingress-nginx`  
-(!!!!! DOWNTIME !!!!!!)  
-because of 1 replica  
-in prod should be OK
-
+> See: [README.md](../gateway-global-ingress/README.md)
 
 ### 2. Using Istio own `Gateway`
 
@@ -130,9 +94,8 @@ in prod should be OK
 > **Better solution**  
 > You can use "OLD" existing Ingress and in parallel add new Istio Gateway.  
 > But you need to create all Ingress rules manually again. !!!  
-> See:  
-> [istio-gateway.yaml.bak](istio-gateway.yaml.bak)  
-> [istio-virtualservice.yaml.bak](istio-virtualservice.yaml.bak)  
+> See: [README.md](../gateway-istio/README.md)
+
 > **And after enabling mTLS "OLD" Ingress will not work anymore because it cannot encrypt traffic**
 
 It means that links:  
@@ -173,53 +136,11 @@ spec:
   mtls:
     mode: STRICT
 ```
-### How to check
-Get pod names:
-```
-C:\CODE\k8s_istio\k8s>kubectl get pods -n skais-2-test
-NAME                                    READY   STATUS    RESTARTS        AGE
-deployment-service-a-b49448f6c-5smr9    2/2     Running   2 (3h52m ago)   22h
-deployment-service-b-6f6fb5b4b6-9xhqh   2/2     Running   2 (3h52m ago)   22h
-```
-Try to access from `istio-proxy` (sidecar) (it will not encrypt traffic) to pod 
-```
-C:\CODE\k8s_istio\k8s>kubectl exec -it deployment-service-b-6f6fb5b4b6-9xhqh -n skais-2-test -c istio-proxy -- curl -i http://service-a-svc:8080/get-hello
-curl: (56) Recv failure: Connection reset by peer
-command terminated with exit code 56
-```
-**Get error: `Connection reset by peer`, this means that mTLS is enabled.**
-
-Now delete `PeerAuthentication` rules:
-```
-kubectl delete peerauthentication strict-mtls-service-a -n skais-2-test
-kubectl delete peerauthentication strict-mtls-service-b -n skais-2-test
-```
-Trying to access from `istio-proxy` (sidecar) to pod:
-```
-C:\CODE\k8s_istio\k8s>kubectl exec -it deployment-service-b-6f6fb5b4b6-9xhqh -n skais-2-test -c istio-proxy -- curl -i http://service-a-svc:8080/get-hello
-HTTP/1.1 200 OK
-content-type: application/json
-content-length: 57
-date: Fri, 07 Aug 2026 12:51:16 GMT
-x-envoy-upstream-service-time: 4
-server: istio-envoy
-x-envoy-decorator-operation: service-a-svc.skais-2-test.svc.cluster.local:8080/*
-
-{"role":"A1","timestamp":"2026-08-07T12:51:16.158092354"}
-```
-**Get response :`{"role":"A1","timestamp":"2026-08-07T12:51:16.158092354"}`, this means that mTLS is disabled.**
-
-Trying to access from `port-forward`
-`kubectl port-forward pod/deployment-service-b-6f6fb5b4b6-9xhqh -n skais-2-test 8082:8080`
-
-http://localhost:8082/get-hello  
-**OK** because `port-forward` is go directly to the JAVA application.
-```
-{
-  "timestamp": "2026-08-07T12:59:12.787270192",
-  "role": "B1"
-}
-```
+### How to check 2
+1. Do switch ON Ingress from here:[README.md](../gateway-global-ingress/README.md)
+2. Do switch OFF ISTIO in Ingress from here: [README.md](../gateway-global-ingress/README.md)
+3. Try to access: http://localhost/service-b/get-communication-hello  
+You will see error `502 Bad Gateway`
 
 ## Access rules (AuthorizationPolicy)
 
@@ -315,21 +236,3 @@ http://localhost/service-a/get-communication-hello
 * **How it works:** You install an Envoy proxy directly inside the VM and give it a Kubernetes passport (`ServiceAccount`) [🔗].
 * **Pros:** The VM becomes a full member of the Service Mesh. It gets **STRICT mTLS** security, respects `AuthorizationPolicy`, and can natively call internal cluster DNS names [🔗].
 * **Cons:** Higher setup complexity; requires maintaining the Envoy proxy on the VM.
-
-
------------
-### Garbage for the future use 
-Just for my own use  
-**Not part of the README**  
-
-
-C:\Users\dev>kubectl get pods -n skais-2-test
-NAME                                    READY   STATUS    RESTARTS   AGE
-deployment-service-a-69fb8dc6cb-wbrmf   2/2     Running   0          143m
-deployment-service-b-686bfb6cf7-bk2xv   2/2     Running   0          143m
-
-C:\Users\dev>istioctl proxy-config cluster deployment-service-a-69fb8dc6cb-wbrmf -n skais-2-test --fqdn service-b-svc.skais-2-test.svc.cluster.local
-SERVICE FQDN                                     PORT     SUBSET     DIRECTION     TYPE     DESTINATION RULE
-service-b-svc.skais-2-test.svc.cluster.local     8080     -          outbound      EDS
-
-EDS (Endpoint Discovery Service).

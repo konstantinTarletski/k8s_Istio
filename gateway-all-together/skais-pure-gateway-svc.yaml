@@ -1,0 +1,14 @@
+apiVersion: v1
+kind: Service
+metadata:
+  name: skais-pure-gateway-svc
+  namespace: skais-2-test
+spec:
+  type: NodePort # Bypasses Docker Desktop LoadBalancer pending bug
+  selector:
+    app: skais-pure-gateway
+  ports:
+    - name: http
+      nodePort: 32080 # This port will open on your Windows localhost!
+      port: 80
+      targetPort: 8080
