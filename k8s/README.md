@@ -37,7 +37,9 @@ docker save skais-microservice-example:latest | docker exec -i desktop-control-p
 ```
 
 ## Create namespace:  
-`kubectl create namespace skais-2-test`
+`kubectl create namespace skais-2-test`  
+Delete namespace (if needed):  
+`kubectl delete namespace skais-2-test`
 
 ## Apply all k8s YAML files:
 ```
