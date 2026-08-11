@@ -35,7 +35,7 @@ Actually not needed here, but it is necessary for `AuthorizationPolicy`, `Deploy
 > See Istio Readme: [README.md](../istio/README.md)
 
 Communication rules `AuthorizationPolicy`:  
-[authorization-policy-service-a.yaml](istio/authorization-policy-service-a.yaml)
+[authorization-policy-service-a.yaml](istio/authorization-policy-service-a.yaml)  
 Istio `PeerAuthentication` mTLS rule  
 [peer-authentication-service-a.yaml](istio/peer-authentication-service-a.yaml)  
 Istio `PeerAuthentication` mTLS rule  
