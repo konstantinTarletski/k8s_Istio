@@ -7,6 +7,9 @@
 - - gateway-istio
 - - gateway-hybrid-ingress-istio
 
+# If you konw what to do, then commands list
+[README.md](README.md)
+
 # Parts of this project:
 
 ## Microservice

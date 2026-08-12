@@ -12,7 +12,7 @@ B microservice:
 - http://localhost/service-istio-b/get-communication-hello  
 
 
-## Switch ON/OF Istio own `Gateway`:
+## Switch ON/OFF Istio own `Gateway`:
 
 ### Switch ON
 1. Do "Switching: NGINX → Istio" from here:
@@ -21,7 +21,7 @@ B microservice:
 2. Apply the Istio gateway and virtual service definitions 
 `kubectl apply -f C:\CODE\k8s_istio\gateway-istio`
 
-### Switch OOFF
+### Switch OFF
 1. Remove Istio routing definitions from the local namespace  
    `kubectl delete -f C:\CODE\k8s_istio\gateway-istio\ --ignore-not-found`
 
