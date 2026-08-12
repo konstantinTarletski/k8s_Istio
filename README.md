@@ -35,7 +35,7 @@ Actually not needed here, but it is necessary for `AuthorizationPolicy`, `Deploy
 
 # ISTIO
 > [!TIP]
-> See Istio Readme: [README.md](../istio/README.md)
+> See Istio Readme: [README.md](/istio/README.md)
 
 Communication rules `AuthorizationPolicy`:  
 [authorization-policy-service-a.yaml](istio/authorization-policy-service-a.yaml)  
