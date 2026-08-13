@@ -1,7 +1,20 @@
 # Modify the existing Ingress GLOBAL service
 
-To run this, you need to apply this Ingress controller once:  
+
+### Install nginx
+
+`kubectl apply -k C:\CODE\k8s_istio\infrastructure\nginx`
+or  
 `kubectl apply -f https://raw.githubusercontent.com/kubernetes/ingress-nginx/main/deploy/static/provider/cloud/deploy.yaml`
+
+Check result:
+```
+kubectl get svc -n ingress-nginx
+Output(something like this):
+NAME                                 TYPE           CLUSTER-IP     EXTERNAL-IP   PORT(S)                      AGE
+ingress-nginx-controller             LoadBalancer   10.96.71.85    172.20.0.5    80:30096/TCP,443:30430/TCP   8s
+ingress-nginx-controller-admission   ClusterIP      10.96.238.74   <none>        443/TCP                      8s
+```
 
 ### Microservices access links:
 A microservice:  

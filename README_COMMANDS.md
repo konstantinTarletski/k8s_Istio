@@ -1,5 +1,12 @@
 # All main commands together
 
+## infra
+```cmd
+kubectl apply -k C:\CODE\k8s_istio\infrastructure\nginx\
+kubectl kustomize C:\CODE\k8s_istio\infrastructure\istio\ --enable-helm | kubectl apply -f -
+kubectl kustomize C:\CODE\k8s_istio\infrastructure\istio\ --enable-helm | kubectl delete -f -
+```
+
 ## create namespace and enable istio
 ```cmd
 kubectl create namespace skais-2-test
@@ -24,8 +31,11 @@ kubectl label namespace ingress-nginx istio-injection-
 kubectl patch svc istio-ingressgateway -n istio-system -p "{\"spec\": {\"type\": \"ClusterIP\"}}"
 kubectl patch svc istio-ingressgateway -n istio-system -p "{\"spec\": {\"type\": \"LoadBalancer\"}}"
 
-kubectl get svc -n istio-system
+kubectl get pods -n istio-system
+kubectl get pods -n istio-ingress
+kubectl get pods -n istio-egress
 kubectl rollout restart deployment/istio-ingressgateway -n istio-system
+kubectl delete pod -n istio-egress -l app=istio-egressgateway
 ```
 
 ## YAML apply

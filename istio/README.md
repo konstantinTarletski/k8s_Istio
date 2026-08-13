@@ -10,17 +10,24 @@ Check if Istio can be installed to a cluster
 
 ### Install Istio
 
+`kubectl kustomize C:\CODE\k8s_istio\infrastructure\istio\ --enable-helm | kubectl apply -f -`  
+**OR**   
+`istioctl install --set profile=demo -y`  
+`profile=demo` -- Aggressive logging, not for PROD
+
+Check result:
 ```
-istioctl install --set profile=demo -y
 kubectl get pods -n istio-system
-Output:
+kubectl get pods -n istio-ingress
+kubectl get pods -n istio-egress
+Output(something like this):
 NAME                                   READY   STATUS    RESTARTS   AGE
 istio-egressgateway-6f4fc6cdb9-xtl78   1/1     Running   0          52s
-istio-ingressgateway-75858699f-zmq7d   1/1     Running   0          52s
+istio-ingressgateway-75858699f-zmq7d   1/1     Running   0          52s <-- not in kustomization
 istiod-67c645856-lfqmr                 1/1     Running   0          62s
 ```
 
-`profile=demo` -- Aggressive logging, not for PROD
+
 
 ## Adding sidecars
 
