@@ -1,14 +1,18 @@
 # How to run
 - Build microservice (Java)
-- Apply k8s manifests
-- Apply istio manifests
-- Apply One of :
-- - gateway-global-ingress
-- - gateway-istio
-- - gateway-hybrid-ingress-istio
+- Install Istio infrastructure, choose one mode
+- - [istio-ambient](infrastructure/istio-ambient) — no sidecar proxies
+- - [istio-sidecar](infrastructure/istio-sidecar) — proxy in every pod
+- - [Switch between modes](README_SWITCH_ISTIO.md)
+- Apply [k8s](k8s) manifests
+- Apply [istio-policies](istio-policies)
+- Apply one of the gateways
+- - [gateway-k8s-ingress](gateway-k8s-ingress)
+- - [gateway-istio](gateway-istio)
+- - [gateway-hybrid-k8s-istio](gateway-hybrid-k8s-istio)
 
 # If you know what to do, then commands list
-[README.md](README.md)
+[README_COMMANDS.md](README_COMMANDS.md)
 
 # Parts of this project:
 
@@ -33,27 +37,27 @@ Actually not needed here, but it is necessary for `AuthorizationPolicy`, `Deploy
 Actually not needed here, but it is necessary for `AuthorizationPolicy`, `Deployment` have a link to it  
 [service-account-service-b.yaml](k8s/service-account-service-b.yaml)
 
-# ISTIO
+# ISTIO Policies
 > [!TIP]
-> See Istio Readme: [README.md](/istio/README.md)
+> See Istio Readme: [README.md](istio-policies/README.md)
 
 Communication rules `AuthorizationPolicy`:  
-[authorization-policy-service-a.yaml](istio/authorization-policy-service-a.yaml)  
+[authorization-policy-service-a.yaml](istio-policies/authorization-policy-service-a.yaml)  
 Istio `PeerAuthentication` mTLS rule  
-[peer-authentication-service-a.yaml](istio/peer-authentication-service-a.yaml)  
+[peer-authentication-service-a.yaml](istio-policies/peer-authentication-service-a.yaml)  
 Istio `PeerAuthentication` mTLS rule  
-[peer-authentication-service-b.yaml](istio/peer-authentication-service-b.yaml)  
+[peer-authentication-service-b.yaml](istio-policies/peer-authentication-service-b.yaml)  
 
 
-# gateway-global-ingress
+# gateway-k8s-ingress
 > [!TIP]
-> See Readme: [README.md](gateway-global-ingress/README.md)
+> See Readme: [README.md](gateway-k8s-ingress/README.md)
 
-[ingress.yaml](gateway-global-ingress/ingress.yaml)
+[ingress.yaml](gateway-k8s-ingress/ingress.yaml)
 
-# gateway-hybrid-ingress-istio
+# gateway-hybrid-k8s-istio
 > [!TIP]
-> See Readme: [README.md](gateway-hybrid-ingress-istio/README.md)
+> See Readme: [README.md](gateway-hybrid-k8s-istio/README.md)
 
 # gateway-istio
 > [!TIP]

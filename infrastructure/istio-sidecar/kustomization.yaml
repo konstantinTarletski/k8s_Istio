@@ -1,12 +1,16 @@
 apiVersion: kustomize.config.k8s.io/v1beta1
 kind: Kustomization
 
-resources:
-  - namespace-istio-ingress.yaml
-  - namespace-istio-system.yaml
-  - namespace-istio-egress.yaml
+namespace: istio-system
 
 helmCharts:
+
+  # Istio base
+  - name: base
+    repo: https://istio-release.storage.googleapis.com/charts
+    version: "1.30.3"
+    releaseName: istio-base
+    namespace: istio-system
 
   # Istio control plane
   - name: istiod
@@ -26,11 +30,14 @@ helmCharts:
     repo: https://istio-release.storage.googleapis.com/charts
     version: "1.30.3"
     releaseName: gateway
-    namespace: istio-ingress
+    namespace: istio-system
 
   # Istio egress gateway
-  - name: gateway
-    repo: https://istio-release.storage.googleapis.com/charts
-    version: "1.30.3"
-    releaseName: istio-egressgateway
-    namespace: istio-egress
+  #- name: gateway
+  #  repo: https://istio-release.storage.googleapis.com/charts
+  #  version: "1.30.3"
+  #  releaseName: istio-egressgateway
+  #  namespace: istio-system
+
+resources:
+  - namestace-istio-system.yaml

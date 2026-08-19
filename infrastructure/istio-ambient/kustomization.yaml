@@ -1,0 +1,65 @@
+apiVersion: kustomize.config.k8s.io/v1beta1
+kind: Kustomization
+
+namespace: istio-system
+
+helmCharts:
+  - name: base
+    repo: https://istio-release.storage.googleapis.com/charts
+    version: "1.30.3"
+    releaseName: istio-base
+    namespace: istio-system
+    valuesInline:
+      defaultRevision: default
+
+  - name: istiod
+    repo: https://istio-release.storage.googleapis.com/charts
+    version: "1.30.3"
+    releaseName: istiod
+    namespace: istio-system
+    valuesInline:
+      profile: ambient
+      global:
+        hub: docker.io/istio
+        tag: "1.30.3"
+
+  - name: cni
+    repo: https://istio-release.storage.googleapis.com/charts
+    version: "1.30.3"
+    releaseName: istio-cni
+    namespace: istio-system
+    valuesInline:
+      profile: ambient
+      global:
+        hub: docker.io/istio
+        tag: "1.30.3"
+
+  # ???????????????????
+  #- name: waypoint
+
+  - name: ztunnel
+    repo: https://istio-release.storage.googleapis.com/charts
+    version: "1.30.3"
+    releaseName: ztunnel
+    namespace: istio-system
+    valuesInline:
+      hub: docker.io/istio
+      tag: "1.30.3"
+
+  - name: kiali-server
+    repo: https://kiali.org/helm-charts
+    version: "2.4.0"
+    releaseName: kiali
+    namespace: istio-system
+    valuesInline:
+      auth:
+        strategy: anonymous
+      external_services:
+        prometheus:
+          url: http://rancher-monitoring-prometheus.cattle-monitoring-system.svc:9090
+        istio:
+          root_namespace: istio-system
+
+resources:
+  - namestace-istio-system.yaml
+  - ingress-kiali.yaml

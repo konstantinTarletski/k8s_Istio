@@ -36,15 +36,8 @@ docker exec -it desktop-control-plane crictl images | findstr skais
 docker save skais-microservice-example:latest | docker exec -i desktop-control-plane ctr -n k8s.io images import -
 ```
 
-## Create namespace:  
-`kubectl create namespace skais-2-test`  
-Delete namespace (if needed):  
-`kubectl delete namespace skais-2-test`
-
 ## Apply all k8s YAML files:
-```
-kubectl apply -f C:\CODE\k8s_istio\k8s\
-```
+`kubectl apply -k C:\CODE\k8s_istio\k8s`
 
 ## Logs:
 ```
