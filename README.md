@@ -9,7 +9,7 @@
 - Apply one of the gateways
 - - [gateway-k8s-ingress](gateway-k8s-ingress)
 - - [gateway-istio](gateway-istio)
-- - [gateway-hybrid-k8s-istio](gateway-hybrid-k8s-istio)
+- - [gateway-hybrid-k8s-istio](gateway-hybrid-k8s-istio) *(not tested yet)*
 
 # If you know what to do, then commands list
 [README_COMMANDS.md](README_COMMANDS.md)
@@ -55,7 +55,7 @@ Istio `PeerAuthentication` mTLS rule
 
 [ingress.yaml](gateway-k8s-ingress/ingress.yaml)
 
-# gateway-hybrid-k8s-istio
+# gateway-hybrid-k8s-istio *(not tested yet)*
 > [!TIP]
 > See Readme: [README.md](gateway-hybrid-k8s-istio/README.md)
 

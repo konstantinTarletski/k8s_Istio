@@ -37,6 +37,12 @@ helmCharts:
   # ???????????????????
   #- name: waypoint
 
+  - name: gateway
+    repo: https://istio-release.storage.googleapis.com/charts
+    version: "1.30.3"
+    releaseName: gateway
+    namespace: istio-system
+
   - name: ztunnel
     repo: https://istio-release.storage.googleapis.com/charts
     version: "1.30.3"

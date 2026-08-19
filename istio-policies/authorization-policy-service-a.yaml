@@ -1,0 +1,16 @@
+apiVersion: security.istio.io/v1beta1
+kind: AuthorizationPolicy
+metadata:
+  name: block-b-to-a
+  namespace: skais-2-test
+spec:
+  selector:
+    matchLabels:
+      app: label-service-a # Defence target
+      # from here:
+      # Deployment.spec.template.metadata.labels.app --> "label-service-a"
+  action: DENY
+  rules:
+    - from:
+        - source:
+            principals: ["cluster.local/ns/skais-2-test/sa/service-b-sa"]

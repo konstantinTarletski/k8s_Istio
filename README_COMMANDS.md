@@ -18,12 +18,14 @@ http://localhost:8080/get-hello
 ## 2. Gateways (choose one)
 
 ### gateway-istio
+> Requires LB mode: **Istio**. See [README_SWITCH_LB.md](README_SWITCH_LB.md)
 ```cmd
 kubectl apply -f C:\CODE\k8s_istio\gateway-istio
 kubectl delete -f C:\CODE\k8s_istio\gateway-istio
 ```
 
 ### gateway-k8s-ingress
+> Requires LB mode: **NGINX**. See [README_SWITCH_LB.md](README_SWITCH_LB.md)
 ```cmd
 kubectl apply -k C:\CODE\k8s_istio\infrastructure\nginx
 kubectl apply -f C:\CODE\k8s_istio\gateway-k8s-ingress
@@ -49,11 +51,13 @@ http://localhost/service-b/get-hello
 http://localhost/service-b/get-communication-hello  
 
 
-### gateway-hybrid-k8s-istio
-> TODO: not implemented yet
-
-### LoadBalancer switching (NGINX ↔ Istio)
-See [README_SWITCH_LB.md](README_SWITCH_LB.md)
+### gateway-hybrid-k8s-istio *(not tested yet)*
+> Requires LB mode: **NGINX**. See [README_SWITCH_LB.md](README_SWITCH_LB.md)
+```cmd
+kubectl apply -k C:\CODE\k8s_istio\infrastructure\nginx
+kubectl apply -f C:\CODE\k8s_istio\gateway-hybrid-k8s-istio
+kubectl delete -f C:\CODE\k8s_istio\gateway-hybrid-k8s-istio
+```
 
 ---
 

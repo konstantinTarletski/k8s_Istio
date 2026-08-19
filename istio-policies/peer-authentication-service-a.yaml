@@ -1,0 +1,13 @@
+apiVersion: security.istio.io/v1beta1
+kind: PeerAuthentication
+metadata:
+  name: strict-mtls-service-a
+  namespace: skais-2-test
+spec:
+  selector:
+    matchLabels:
+      app: label-service-a
+      # Target for mTLS enforcement. Must exactly match the pod label:
+      # Deployment.spec.template.metadata.labels.app --> "label-service-a"
+  mtls:
+    mode: STRICT
