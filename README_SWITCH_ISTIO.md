@@ -19,6 +19,8 @@ kubectl label namespace skais-2-test istio-injection-
 
 kubectl kustomize C:\CODE\k8s_istio\infrastructure\istio-ambient --enable-helm | kubectl apply -f -
 
+kubectl label namespace skais-2-test istio.io/dataplane-mode=ambient --overwrite
+
 kubectl rollout restart deployment -n skais-2-test
 ```
 
@@ -50,6 +52,8 @@ kubectl delete namespace istio-system
 kubectl label namespace skais-2-test istio.io/dataplane-mode-
 
 kubectl kustomize C:\CODE\k8s_istio\infrastructure\istio-sidecar --enable-helm | kubectl apply -f -
+
+kubectl label namespace skais-2-test istio-injection=enabled --overwrite
 
 kubectl rollout restart deployment -n skais-2-test
 ```

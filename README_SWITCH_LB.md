@@ -17,7 +17,7 @@ First disable the NGINX LoadBalancer and then enable the Istio LoadBalancer.
 ```cmd
 kubectl patch svc ingress-nginx-controller -n ingress-nginx -p "{\"spec\":{\"type\":\"ClusterIP\"}}"
 
-kubectl patch svc istio-ingressgateway -n istio-system -p "{\"spec\":{\"type\":\"LoadBalancer\"}}"
+kubectl patch svc gateway -n istio-system -p "{\"spec\":{\"type\":\"LoadBalancer\"}}"
 
 kubectl get svc -n ingress-nginx
 kubectl get svc -n istio-system
@@ -35,7 +35,7 @@ ingress-nginx-controller   ClusterIP   10.96.225.96   <none>        80/TCP,443/T
 C:\CODE\k8s_istio>kubectl get svc -n istio-system
 
 NAME                   TYPE           CLUSTER-IP     EXTERNAL-IP   PORT(S)
-istio-ingressgateway   LoadBalancer   10.96.239.63   172.20.0.4    15021:31040/TCP,80:31940/TCP,443:30128/TCP
+gateway   LoadBalancer   10.96.239.63   172.20.0.4    15021:31040/TCP,80:31940/TCP,443:30128/TCP
 ```
 
 ### What to check
@@ -61,7 +61,7 @@ This means **Istio owns the external LoadBalancer**.
 First disable the Istio LoadBalancer and then enable the NGINX LoadBalancer.
 
 ```cmd
-kubectl patch svc istio-ingressgateway -n istio-system -p "{\"spec\":{\"type\":\"ClusterIP\"}}"
+kubectl patch svc gateway -n istio-system -p "{\"spec\":{\"type\":\"ClusterIP\"}}"
 
 kubectl patch svc ingress-nginx-controller -n ingress-nginx -p "{\"spec\":{\"type\":\"LoadBalancer\"}}"
 
@@ -75,7 +75,7 @@ Expected output:
 C:\CODE\k8s_istio>kubectl get svc -n istio-system
 
 NAME                   TYPE        CLUSTER-IP     EXTERNAL-IP   PORT(S)
-istio-ingressgateway   ClusterIP   10.96.239.63   <none>        15021/TCP,80/TCP,443/TCP
+gateway   ClusterIP   10.96.239.63   <none>        15021/TCP,80/TCP,443/TCP
 
 
 C:\CODE\k8s_istio>kubectl get svc -n ingress-nginx

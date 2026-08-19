@@ -1,6 +1,6 @@
 # Using Istio own `Gateway`
 
-It is already present when yu install ISTIO
+It is already present when you install ISTIO
 
 ### Microservices access links:
 A microservice:  
