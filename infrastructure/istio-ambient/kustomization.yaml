@@ -54,17 +54,12 @@ helmCharts:
 
   - name: kiali-server
     repo: https://kiali.org/helm-charts
-    version: "2.4.0"
+    version: "2.28.0"
     releaseName: kiali
     namespace: istio-system
     valuesInline:
       auth:
         strategy: anonymous
-      external_services:
-        prometheus:
-          url: http://rancher-monitoring-prometheus.cattle-monitoring-system.svc:9090
-        istio:
-          root_namespace: istio-system
 
 resources:
   - namestace-istio-system.yaml

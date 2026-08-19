@@ -93,6 +93,11 @@ kubectl delete -f C:\CODE\k8s_istio\istio-policies\
 
 ---
 
+## Kiali (service mesh dashboard)
+http://localhost/kiali
+
+---
+
 ## Useful checks
 ```cmd
 kubectl get pods -n skais-2-test

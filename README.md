@@ -67,3 +67,10 @@ Istio `Gateway` Part of Istio "Ingress"
 [istio-gateway.yaml](gateway-istio/istio-gateway.yaml)  
 Istio `VirtualService` Part of Istio "Ingress"  
 [istio-virtualservice.yaml](gateway-istio/istio-virtualservice.yaml)
+
+---
+
+# Future work
+- Prometheus + Grafana — metrics and dashboards for Istio traffic
+- Test `gateway-hybrid-k8s-istio` setup
+- Waypoint proxy for ambient mode (L7 policies)
